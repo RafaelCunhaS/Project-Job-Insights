@@ -9,18 +9,20 @@ def get_unique_job_types(path):
 
 
 def filter_by_job_type(jobs, job_type):
-    return [job for job in jobs if job['job_type'] == job_type]
+    return [job for job in jobs if job["job_type"] == job_type]
 
 
 def get_unique_industries(path):
     all_jobs = read(path)
-    industries = set([value["industry"] for value in all_jobs])
+    industries = set(
+        [value["industry"] for value in all_jobs if value["industry"] != ""]
+    )
 
     return industries
 
 
 def filter_by_industry(jobs, industry):
-    return [job for job in jobs if job['industry'] == industry]
+    return [job for job in jobs if job["industry"] == industry]
 
 
 def get_max_salary(path):
@@ -50,44 +52,26 @@ def get_min_salary(path):
 
 
 def matches_salary_range(job, salary):
-    """Checks if a given salary is in the salary range of a given job
+    if "min_salary" not in job or "max_salary" not in job:
+        raise ValueError
 
-    Parameters
-    ----------
-    job : dict
-        The job with `min_salary` and `max_salary` keys
-    salary : int
-        The salary to check if matches with salary range of the job
+    elif type(job["min_salary"]) != int or type(job["max_salary"]) != int:
+        raise ValueError
 
-    Returns
-    -------
-    bool
-        True if the salary is in the salary range of the job, False otherwise
+    elif int(job["min_salary"]) > int(job["max_salary"]):
+        raise ValueError
 
-    Raises
-    ------
-    ValueError
-        If `job["min_salary"]` or `job["max_salary"]` doesn't exists
-        If `job["min_salary"]` or `job["max_salary"]` aren't valid integers
-        If `job["min_salary"]` is greather than `job["max_salary"]`
-        If `salary` isn't a valid integer
-    """
-    pass
+    elif type(salary) != int:
+        raise ValueError
+
+    return int(job["min_salary"]) <= salary <= int(job["max_salary"])
 
 
 def filter_by_salary_range(jobs, salary):
-    """Filters a list of jobs by salary range
-
-    Parameters
-    ----------
-    jobs : list
-        The jobs to be filtered
-    salary : int
-        The salary to be used as filter
-
-    Returns
-    -------
-    list
-        Jobs whose salary range contains `salary`
-    """
-    return []
+    return [
+        job
+        for job in jobs
+        if job["min_salary"] < job["max_salary"]
+        and type(salary) == int
+        and job["min_salary"] <= salary <= job["max_salary"]
+    ]
