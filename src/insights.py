@@ -3,7 +3,9 @@ from src.jobs import read
 
 def get_unique_job_types(path):
     all_jobs = read(path)
-    jobs_types = set([value["job_type"] for value in all_jobs])
+    jobs_types = set(
+        [value["job_type"] for value in all_jobs if value["job_type"] != ""]
+    )
 
     return jobs_types
 
@@ -73,5 +75,5 @@ def filter_by_salary_range(jobs, salary):
         for job in jobs
         if job["min_salary"] < job["max_salary"]
         and type(salary) == int
-        and job["min_salary"] <= salary <= job["max_salary"]
+        and int(job["min_salary"]) <= salary <= int(job["max_salary"])
     ]
